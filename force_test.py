@@ -86,7 +86,7 @@ force_hist = []
 
 task_frame = start_pose
 selection_vector = [0, 0, 1, 0, 0, 0]
-wrench_up =        [0, 0, 2, 0, 0, 0]
+wrench_up =        [0, 0, 10, 0, 0, 0]
 force_type = 2
 limits = [2]*6 #[1, 1, 1, 1, 1, 1]
 dt = 1.0/500  # 2ms
