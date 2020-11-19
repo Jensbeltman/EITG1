@@ -163,4 +163,4 @@ class FunctionCallReceiveSocket(socket.socket):
             self.motor_go(clockwise, steptype, steps, stepdelay, verbose, initdelay)
             initdelay_on = False
 
-            switch_down = switch_check(end_switch_to_use
+            switch_down = switch_check(end_switch_to_use)
