@@ -48,17 +48,18 @@ class FunctionCallReceiveSocket(socket.socket):
     def wait_for_function_call(self):
         while True:
             data = self.connection.recv(1024)
-            print("Receved data:", data)
-            decoed_calls = self._decode_data(data)
-            print("Calls:", decoed_calls)
+            if len(data):
+                print("Receved data:", data)
+                decoed_calls = self._decode_data(data)
+                print("Calls:", decoed_calls)
 
-            for call in decoed_calls:
-                if (call[0] == ''):
-                    print("Connection with {} ended waiting for new one".format(self.address))
-                    self.wait_for_connection()
-                else:
-                    print("Calling {} with parameters {}".format(call[0], call[1:]))
-                    self.function[call[0]](*call[1:])
+                for call in decoed_calls:
+                    if (call[0] == ''):
+                        print("Connection with {} ended waiting for new one".format(self.address))
+                        self.wait_for_connection()
+                    else:
+                        print("Calling {} with parameters {}".format(call[0], call[1:]))
+                        self.function[call[0]](*call[1:])
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
