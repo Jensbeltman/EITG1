@@ -16,7 +16,14 @@ s.motor_go(False, "Full", 1000, speed, False, .05)
 s.motor_go(True, "Full", 1000, speed, False, .05)
 s.motor_go(False, "Full", 1000, speed, False, .05)
 
-#time.sleep(3)
+time.sleep(10)
+
+s.motor_go(True, "Full", 1000, speed, False, .05)
+s.motor_go(False, "Full", 1000, speed, False, .05)
+s.motor_go(True, "Full", 1000, speed, False, .05)
+s.motor_go(False, "Full", 1000, speed, False, .05)
+s.motor_go(True, "Full", 1000, speed, False, .05)
+s.motor_go(False, "Full", 1000, speed, False, .05)
 
 #s.motor_go(True, "Full", 1000, speed, False, .05)
 

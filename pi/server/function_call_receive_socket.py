@@ -51,7 +51,7 @@ class FunctionCallReceiveSocket(socket.socket):
 
     def _check_connection(self):
         try:
-            self.send("some more data")
+            self.send(b"ABC123")
             return True
         except:
             return False
@@ -74,9 +74,16 @@ class FunctionCallReceiveSocket(socket.socket):
         if len(data):
             self.first_nodata = True
             print("Receved data:", data)
-            decoed_calls = self._decode_data(data)
-            print("Calls:", decoed_calls)
-            return decoed_calls
+            print(data[0])
+            if data[0] == "#":
+                decoed_calls = self._decode_data(data)
+                print("Calls:", decoed_calls)
+                return decoed_calls
+            elif data[0] == "&":
+                command = str(data).replace("&", "")
+                if command == "CLOSE":
+                    self._connect(do_bind=False)
+
         else:
             if self.first_nodata:
                 print("Waiting for data")
@@ -91,8 +98,6 @@ class FunctionCallReceiveSocket(socket.socket):
                     self.call_q.put(call)
                     print("Command queue length (put):", self.call_q.qsize())
 
-            if not self._check_connection():
-                self._connect(do_bind=False)
 
     def _run_call(self):
         while True:
@@ -114,9 +119,6 @@ class FunctionCallReceiveSocket(socket.socket):
             if decoed_calls is not None:
                 for call in decoed_calls:
                     self.function[call[0]](*call[1:])
-
-            if not self._check_connection():
-                self._connect(do_bind=False)
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
