@@ -42,7 +42,7 @@ class FunctionCallReceiveSocket(socket.socket):
         _, *calls = data_str.split("#")
         decoed_calls = []
         for call in calls:
-            decoed_calls.append(call[2:-1].split(' '))
+            decoed_calls.append(call.split(' '))
         return decoed_calls
 
     def wait_for_function_call(self):
