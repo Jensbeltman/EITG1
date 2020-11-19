@@ -3,6 +3,7 @@ import threading, queue
 from RpiMotorLib import RpiMotorLib
 from endSwith import EndSwith
 
+
 class FunctionCallReceiveSocket(socket.socket):
     def __init__(self, HOST, PORT,
                  direction_pin, step_pin, mode_pins,
@@ -48,6 +49,7 @@ class FunctionCallReceiveSocket(socket.socket):
         self.wait_for_connection()
 
     def _check_connection(self):
+        return True
         connection_live = self.connection.fileno() != -1
         print(self.connection.fileno())
         if not connection_live:
