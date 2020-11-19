@@ -6,8 +6,8 @@ from endSwith import EndSwith
 class FunctionCallReceiveSocket(socket.socket):
     def __init__(self, HOST, PORT,
                  direction_pin, step_pin, mode_pins,
-                 endswitch_pin_closed, endswitch_pin_open
-                 ):
+                 endswitch_pin_closed, endswitch_pin_open,
+                 use_threading=True):
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         # Function dict/map
         self.function = {"motor_go": self.motor_go,
@@ -31,11 +31,17 @@ class FunctionCallReceiveSocket(socket.socket):
         self.connection = None
         self.address = None
         self.wait_for_connection()
-        self.wait_for_function_call()
 
         self.call_q = queue.Queue()
 
         self.first_nodata = True
+
+
+        # Has to be last (locking)
+        if use_threading:
+            self._run_threading()
+        else:
+            self.wait_for_function_call()
 
     def wait_for_connection(self):
         self.listen()
@@ -70,13 +76,18 @@ class FunctionCallReceiveSocket(socket.socket):
             if decoed_calls is not None:
                 for call in decoed_calls:
                     self.call_q.put(call)
+                    print("Command queue length (put):", self.call_q.qsize())
 
     def _run_call(self):
         while True:
             if not self.call_q.empty():
+                print("Command queue length (get):", self.call_q.qsize())
                 call = self.call_q.get()
                 self.function[call[0]](*call[1:])
 
+    def _run_threading(self):
+        t = threading.Thread(target=self._command_receiver, daemon=True).start()
+        self._run_call()
 
     def wait_for_function_call(self):
         """
