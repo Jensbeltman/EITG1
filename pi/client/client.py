@@ -2,7 +2,7 @@ import socket
 import time
 from function_call_send_socket import FunctionCallSendSocket
 
-HOST = '10.0.0.3'  # The server's hostname or IP address
+HOST = '192.168.43.44'  # The server's hostname or IP address
 PORT = 65432        # The port used by the server
 
 s = FunctionCallSendSocket(HOST,PORT)
