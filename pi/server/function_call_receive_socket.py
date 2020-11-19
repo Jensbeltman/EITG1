@@ -50,6 +50,7 @@ class FunctionCallReceiveSocket(socket.socket):
             data = self.connection.recv(1024)
             print("Receved data:", data)
             decoed_calls = self._decode_data(data)
+            print("Calls:", decoed_calls)
 
             for call in decoed_calls:
                 if (call[0] == ''):
