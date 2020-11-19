@@ -74,12 +74,11 @@ class FunctionCallReceiveSocket(socket.socket):
         if len(data):
             self.first_nodata = True
             print("Receved data:", data)
-            print(data[0])
-            if data[0] == "#":
+            if data[0] == b"#":
                 decoed_calls = self._decode_data(data)
                 print("Calls:", decoed_calls)
                 return decoed_calls
-            elif data[0] == "&":
+            elif data[0] == b"&":
                 command = str(data).replace("&", "")
                 if command == "CLOSE":
                     self._connect(do_bind=False)
