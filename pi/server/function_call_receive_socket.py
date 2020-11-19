@@ -26,11 +26,7 @@ class FunctionCallReceiveSocket(socket.socket):
             self.endswitch_closed = EndSwith(endswitch_pin_closed)
 
         # Setup socket and start listen
-        print("FunctionCallReceiveSocket started with HOST {} and PORT {}".format(HOST, PORT))
-        self.bind((HOST, PORT))
-        self.connection = None
-        self.address = None
-        self.wait_for_connection()
+        self.bind_point = (HOST, PORT)
 
         self.call_q = queue.Queue()
 
@@ -42,6 +38,20 @@ class FunctionCallReceiveSocket(socket.socket):
             self._run_threading()
         else:
             self.wait_for_function_call()
+
+    def _connect(self):
+        print("FunctionCallReceiveSocket started with HOST {} and PORT {}".format(*self.bind_point))
+        self.bind(self.bind_point)
+        self.connection = None
+        self.address = None
+        self.wait_for_connection()
+
+    def _check_connection(self):
+        try:
+            self.send(b"ABC123")
+            return True
+        except:
+            return False
 
     def wait_for_connection(self):
         self.listen()
@@ -78,6 +88,9 @@ class FunctionCallReceiveSocket(socket.socket):
                     self.call_q.put(call)
                     print("Command queue length (put):", self.call_q.qsize())
 
+            if not self._check_connection():
+                self._connect()
+
     def _run_call(self):
         while True:
             if not self.call_q.empty():
@@ -98,6 +111,9 @@ class FunctionCallReceiveSocket(socket.socket):
             if decoed_calls is not None:
                 for call in decoed_calls:
                     self.function[call[0]](*call[1:])
+
+            if not self._check_connection():
+                self._connect()
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
