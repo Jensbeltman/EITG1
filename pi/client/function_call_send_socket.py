@@ -15,10 +15,6 @@ class FunctionCallSendSocket(socket.socket):
         print("Sending: ", msg)
         self.sendall(msg)
 
-    def close(self):
-        self.send(b"&CLOSE")
-        super(FunctionCallSendSocket, self).close()
-
     def motor_go(self, clockwise=False, steptype="Full", steps=200, stepdelay=.005, verbose=False, initdelay=.05):
         self.send_msg("motor_go", clockwise, steptype, steps, stepdelay, verbose, initdelay)
 

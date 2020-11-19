@@ -49,13 +49,6 @@ class FunctionCallReceiveSocket(socket.socket):
         self.address = None
         self.wait_for_connection()
 
-    def _check_connection(self):
-        try:
-            self.send(b"ABC123")
-            return True
-        except:
-            return False
-
     def wait_for_connection(self):
         self.listen()
         self.connection, self.address = self.accept()
@@ -76,16 +69,9 @@ class FunctionCallReceiveSocket(socket.socket):
             type_data = str(data)[0]
             print(type_data)
             print("Receved data:", data)
-            if type_data == "#":
-                print("Command")
-                decoed_calls = self._decode_data(data)
-                print("Calls:", decoed_calls)
-                return decoed_calls
-            elif type_data == b"&":
-                print("Special")
-                command = str(data).replace("&", "")
-                if command == "CLOSE":
-                    self._connect(do_bind=False)
+            decoed_calls = self._decode_data(data)
+            print("Calls:", decoed_calls)
+            return decoed_calls
 
         else:
             if self.first_nodata:
