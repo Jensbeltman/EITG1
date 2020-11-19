@@ -43,6 +43,7 @@ class FunctionCallReceiveSocket(socket.socket):
     def wait_for_function_call(self):
         while True:
             data = self.connection.recv(1024)
+            print("Receved data:", data)
             data = self._decode_data(data)
 
             if (data[0] == ''):
