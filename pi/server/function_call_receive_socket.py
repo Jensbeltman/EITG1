@@ -7,7 +7,7 @@ from endSwith import EndSwith
 def switch_check(end_switch_to_use):
     switch_down = False
     for switch in end_switch_to_use:
-        switch_down = switch_down or switch.switch_down
+        switch_down = switch_down or switch.switch_down()
         if switch_down:
             break
     return switch_down
@@ -156,7 +156,6 @@ class FunctionCallReceiveSocket(socket.socket):
         initdelay_on = True
 
         switch_down = switch_check(end_switch_to_use)
-
         while not switch_down:
             if not initdelay_on:
                 initdelay = 0
