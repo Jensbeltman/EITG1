@@ -41,9 +41,10 @@ class FunctionCallReceiveSocket(socket.socket):
         else:
             self.wait_for_function_call()
 
-    def _connect(self):
+    def _connect(self, do_bind=True):
         print("FunctionCallReceiveSocket started with HOST {} and PORT {}".format(*self.bind_point))
-        self.bind(self.bind_point)
+        if do_bind:
+            self.bind(self.bind_point)
         self.connection = None
         self.address = None
         self.wait_for_connection()
@@ -91,7 +92,7 @@ class FunctionCallReceiveSocket(socket.socket):
                     print("Command queue length (put):", self.call_q.qsize())
 
             if not self._check_connection():
-                self._connect()
+                self._connect(do_bind=False)
 
     def _run_call(self):
         while True:
@@ -115,7 +116,7 @@ class FunctionCallReceiveSocket(socket.socket):
                     self.function[call[0]](*call[1:])
 
             if not self._check_connection():
-                self._connect()
+                self._connect(do_bind=False)
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
