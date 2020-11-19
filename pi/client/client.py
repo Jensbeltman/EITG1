@@ -27,7 +27,7 @@ speed = 0.0005
 
 #s.motor_go(True, "Full", 1000, speed, False, .05)
 
-s.motor_go_to_endswith(endswith="any", clockwise=False, steptype="Full", steps=500, stepdelay=speed, verbose=False, initdelay=.05)
+s.motor_go_to_endswith(endswith="open", clockwise=False, steptype="Full", steps=500, stepdelay=speed, verbose=False, initdelay=.05)
 
 #time.sleep(3)
 
