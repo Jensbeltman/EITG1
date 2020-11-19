@@ -10,7 +10,7 @@ class FunctionCallReceiveSocket(socket.socket):
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         # Function dict/map
         self.function = {"motor_go": self.motor_go,
-                         "motor_go_to_endswith", self.motor_go_to_endswith}
+                         "motor_go_to_endswith": self.motor_go_to_endswith}
 
         # Motor setup
         self.motor = RpiMotorLib.A4988Nema(direction_pin, step_pin, mode_pins, "A4988")
