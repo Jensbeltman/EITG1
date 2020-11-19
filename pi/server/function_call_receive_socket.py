@@ -49,6 +49,7 @@ class FunctionCallReceiveSocket(socket.socket):
 
     def _check_connection(self):
         connection_live = self.connection.fileno() != -1
+        print(self.connection.fileno())
         if not connection_live:
             print("No connection")
         return connection_live
