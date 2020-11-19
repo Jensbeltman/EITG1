@@ -38,20 +38,26 @@ class FunctionCallReceiveSocket(socket.socket):
         print("Connected to {}".format(self.address))
 
     def _decode_data(self, data):
-        return repr(data).replace("#", "")[2:-1].split(' ')
+        data_str = repr(data)
+        _, *calls = data_str.split("#")
+        decoed_calls = []
+        for call in calls:
+            decoed_calls.append(call[2:-1].split(' '))
+        return decoed_calls
 
     def wait_for_function_call(self):
         while True:
             data = self.connection.recv(1024)
             print("Receved data:", data)
-            data = self._decode_data(data)
+            decoed_calls = self._decode_data(data)
 
-            if (data[0] == ''):
-                print("Connection with {} ended waiting for new one".format(self.address))
-                self.wait_for_connection()
-            else:
-                print("Calling {} with parameters {}".format(data[0], data[1:]))
-                self.function[data[0]](*data[1:])
+            for call in decoed_calls:
+                if (call[0] == ''):
+                    print("Connection with {} ended waiting for new one".format(self.address))
+                    self.wait_for_connection()
+                else:
+                    print("Calling {} with parameters {}".format(call[0], call[1:]))
+                    self.function[call[0]](*call[1:])
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
