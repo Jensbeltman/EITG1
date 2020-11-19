@@ -8,7 +8,7 @@ class FunctionCallSendSocket(socket.socket):
 
     @staticmethod
     def msg_format(l):
-        return bytearray('#'.join(map(str, l)), "utf8")
+        return bytearray('#'+' '.join(map(str, l)), "utf8")
 
     def send_msg(self, funtion, *args):
         msg = self.msg_format([funtion, *args])
