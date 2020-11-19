@@ -122,5 +122,10 @@ class FunctionCallReceiveSocket(socket.socket):
             print("The endswitch is not setup")
             return
 
+        initdelay = float(initdelay)
+        initdelay_on = True
         while not end_switch_to_use.switch_down():
+            if not initdelay_on:
+                initdelay = 0
             self.motor_go(clockwise, steptype, steps, stepdelay, verbose, initdelay)
+            initdelay_on = False
