@@ -1,4 +1,5 @@
 import socket
+import threading, queue
 from RpiMotorLib import RpiMotorLib
 from endSwith import EndSwith
 
@@ -32,6 +33,10 @@ class FunctionCallReceiveSocket(socket.socket):
         self.wait_for_connection()
         self.wait_for_function_call()
 
+        self.call_q = queue.Queue()
+
+        self.first_nodata = True
+
     def wait_for_connection(self):
         self.listen()
         self.connection, self.address = self.accept()
@@ -45,21 +50,43 @@ class FunctionCallReceiveSocket(socket.socket):
             decoed_calls.append(call.replace("'", "").split(' '))
         return decoed_calls
 
-    def wait_for_function_call(self):
-        while True:
-            data = self.connection.recv(1024)
-            if len(data):
-                print("Receved data:", data)
-                decoed_calls = self._decode_data(data)
-                print("Calls:", decoed_calls)
+    def _receive_data(self):
+        data = self.connection.recv(1024)
+        if len(data):
+            self.first_nodata = True
+            print("Receved data:", data)
+            decoed_calls = self._decode_data(data)
+            print("Calls:", decoed_calls)
+            return decoed_calls
+        else:
+            if self.first_nodata:
+                print("Waiting for data")
+                self.first_nodata = False
+            return None
 
+    def _command_receiver(self):
+        while True:
+            decoed_calls = self._receive_data()
+            if decoed_calls is not None:
                 for call in decoed_calls:
-                    if (call[0] == ''):
-                        print("Connection with {} ended waiting for new one".format(self.address))
-                        self.wait_for_connection()
-                    else:
-                        print("Calling {} with parameters {}".format(call[0], call[1:]))
-                        self.function[call[0]](*call[1:])
+                    self.call_q.put(call)
+
+    def _run_call(self):
+        while True:
+            if not self.call_q.empty():
+                call = self.call_q.get()
+                self.function[call[0]](*call[1:])
+
+
+    def wait_for_function_call(self):
+        """
+        Non threaded version
+        """
+        while True:
+            decoed_calls = self._receive_data()
+            if decoed_calls is not None:
+                for call in decoed_calls:
+                    self.function[call[0]](*call[1:])
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
