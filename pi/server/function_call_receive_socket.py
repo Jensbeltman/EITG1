@@ -48,13 +48,10 @@ class FunctionCallReceiveSocket(socket.socket):
         self.wait_for_connection()
 
     def _check_connection(self):
-        print(self.connection.fileno())
-        try:
-            self.send(b"ABC123")
-            return True
-        except:
+        connection_live = self.connection.fileno() != -1
+        if not connection_live:
             print("No connection")
-            return False
+        return connection_live
 
     def wait_for_connection(self):
         self.listen()
