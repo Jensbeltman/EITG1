@@ -38,7 +38,7 @@ class FunctionCallReceiveSocket(socket.socket):
         print("Connected to {}".format(self.address))
 
     def _decode_data(self, data):
-        return repr(data)[2:-1].split(' ')
+        return repr(data).replace("#", "")[2:-1].split(' ')
 
     def wait_for_function_call(self):
         while True:
