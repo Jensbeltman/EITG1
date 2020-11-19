@@ -66,8 +66,6 @@ class FunctionCallReceiveSocket(socket.socket):
         data = self.connection.recv(1024)
         if len(data):
             self.first_nodata = True
-            type_data = str(data)[0]
-            print(type_data)
             print("Receved data:", data)
             decoed_calls = self._decode_data(data)
             print("Calls:", decoed_calls)
@@ -135,9 +133,11 @@ class FunctionCallReceiveSocket(socket.socket):
             stepdelay: Number of steps sequence's to execute. Default is one revolution , 200 in Full mode
             initdelay: Intial delay after GPIO pins initialized but before motor is moved
         """
-        end_switch_to_use = self.endswitch_open
+        end_switch_to_use = [self.endswitch_open]
         if endswith == "closed":
-            end_switch_to_use = self.endswitch_closed
+            end_switch_to_use = [self.endswitch_closed]
+        elif endswith == "any":
+            end_switch_to_use = [self.endswitch_closed, self.endswitch_open]
 
         if end_switch_to_use is None:
             print("The endswitch is not setup")
@@ -145,7 +145,14 @@ class FunctionCallReceiveSocket(socket.socket):
 
         initdelay = float(initdelay)
         initdelay_on = True
-        while not end_switch_to_use.switch_down():
+
+        switch_down = False
+        for switch in end_switch_to_use:
+            switch_down = switch_down or switch.switch_down
+            if switch_down:
+                break
+
+        while not switch_down:
             if not initdelay_on:
                 initdelay = 0
             self.motor_go(clockwise, steptype, steps, stepdelay, verbose, initdelay)
