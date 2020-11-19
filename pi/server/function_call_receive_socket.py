@@ -27,6 +27,7 @@ class FunctionCallReceiveSocket(socket.socket):
 
         # Setup socket and start listen
         self.bind_point = (HOST, PORT)
+        self._connect()
 
         self.call_q = queue.Queue()
 
