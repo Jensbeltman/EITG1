@@ -48,8 +48,8 @@ class FunctionCallReceiveSocket(socket.socket):
                 print("Connection with {} ended waiting for new one".format(self.address))
                 self.wait_for_connection()
             else:
-                print("Calling {} with parameters {}".format(data[0], *data[1:]))
-                self.function[data[0]](data[1:])
+                print("Calling {} with parameters {}".format(data[0], data[1:]))
+                self.function[data[0]](*data[1:])
 
     def motor_go(self, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
@@ -64,7 +64,7 @@ class FunctionCallReceiveSocket(socket.socket):
         """
         self.motor.motor_go(clockwise == "True",steptype, int(steps), float(stepdelay), verbose == "True", float(initdelay))
 
-    def motor_go_to_endswitch(self, endswith, clockwise, steptype, steps, stepdelay, verbose, initdelay):
+    def motor_go_to_endswith(self, endswith, clockwise, steptype, steps, stepdelay, verbose, initdelay):
         """
         Runs the motor with the given parameters until the endswith in meet.
 
