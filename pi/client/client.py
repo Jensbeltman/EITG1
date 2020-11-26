@@ -26,6 +26,9 @@ steps = 600
 
 #time.sleep(3)
 
-s.motor_go_to_endswith(endswith="any", clockwise=False, steptype="Full", steps=25, stepdelay=speed, verbose=False, initdelay=.05)
+#s.motor_go_to_endswith(endswith="any", clockwise=False, steptype="Full", steps=25, stepdelay=speed, verbose=False, initdelay=.05)
+
+s.run_switch_test(endswith="any")
+
 
 s.close()

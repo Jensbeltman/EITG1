@@ -2,7 +2,7 @@ import socket
 import threading, queue
 from RpiMotorLib import RpiMotorLib
 from endSwith import EndSwith
-
+import time
 
 def switch_check(end_switch_to_use):
     switch_down = False
@@ -172,9 +172,10 @@ class FunctionCallReceiveSocket(socket.socket):
         elif endswith == "any":
             end_switch_to_use = [self.endswitch_closed, self.endswitch_open]
 
+        print("Checking switch")
         switch_down = switch_check(end_switch_to_use)
         while not switch_down:
-            pass
+            time.sleep(0.1)
 
         print(endswith, "is on")
 
