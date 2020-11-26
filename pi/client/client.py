@@ -2,6 +2,7 @@ import socket
 import time
 from function_call_send_socket import FunctionCallSendSocket
 import subprocess
+import pyperclip
 
 def copy2clip(txt):
     cmd='echo '+txt.strip()+'|clip'
@@ -24,8 +25,8 @@ steps = 100
 
 
 while True:
-    intext = input("Write cmd,args: ")
-    #copy2clip(intext)
+    intext = input("Write cmd,args: ").strip().replace(" ", "")
+    pyperclip.copy(intext)
     cmd, *args = intext.split(",")
     print(cmd, args)
     if cmd == "stop":

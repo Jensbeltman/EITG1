@@ -69,9 +69,11 @@ robot_ip = "192.168.100.2"
 rtde_r = rtde_receive.RTDEReceiveInterface(robot_ip)
 rtde_c = rtde_control.RTDEControlInterface(robot_ip)
 
-home_q = [-1.1349614302264612, -1.2028576892665406, 2.1862648169146937, -2.5916811428465785, -1.6158507505999964, 1.9034147262573242]
-#[-1.1562307516681116, -1.5013179343989869, 1.5410288015948694, -1.6028310261168421, -1.6128180662738245, 1.9432415962219238]
-rtde_c.moveJ(home_q)
+start_pos = rtde_r.getActualTCPPose()
+go_pose = start_pos.copy()
+go_to_height = 0.30
+go_pose[2] = go_to_height
+rtde_c.moveP(go_pose, 0.25, 1.2, 0.0)
 
 TCP_lower = [None, None, None, None, None, None]
 #[None, None, 0.2484923468255163, None, None, None]
@@ -85,37 +87,33 @@ pose_hist = []
 force_hist = []
 
 task_frame = start_pose
+force_down = 10
 selection_vector = [0, 0, 1, 0, 0, 0]
-wrench_up =        [0, 0, 10, 0, 0, 0]
+wrench_up =        [0, 0, force_down, 0, 0, 0]
 force_type = 2
-limits = [2]*6 #[1, 1, 1, 1, 1, 1]
+limits = [2]*6  #[1, 1, 1, 1, 1, 1]
 dt = 1.0/500  # 2ms
 
+go_on_at = 0.8 * force_down  # 80%
 
 # Execute 500Hz control loop for 4 seconds, each cycle is 2ms
-for i in range(7000):
+while True:
     start = time.time()
     # First move the robot down for 2 seconds, then up for 2 seconds
 
     rtde_c.forceMode(task_frame, selection_vector, wrench_up, force_type, limits)
 
-    end = time.time()
-    duration = end - start
-
     act_pose = rtde_r.getActualTCPPose()
     pose_hist.append(act_pose)
-    force_hist.append(rtde_r.getActualTCPForce())
+    force = rtde_r.getActualTCPForce()
+    force_hist.append(force)
 
-    if limet_check(act_pose, limetTCP_lower=TCP_lower):
+    if force[2] >= go_on_at:
         break
-
-    if duration < dt:
-        time.sleep(dt - duration)
 
 rtde_c.forceModeStop()
 
-
-
+rtde_c.moveP(go_pose, 0.25, 1.2, 0.0)
 
 rtde_c.stopScript()
 plot_value_hist(pose_hist, name_mode="pose")
