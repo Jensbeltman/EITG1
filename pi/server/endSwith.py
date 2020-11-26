@@ -2,13 +2,18 @@ import RPi.GPIO as GPIO
 from RpiMotorLib import RpiMotorLib
 
 class EndSwith:
-    def __init__(self, input_pin):
+    def __init__(self, input_pin, name="", print_on_siwth=True):
         self._input_pin = input_pin
         GPIO.setmode(GPIO.BCM)
         GPIO.setup(self._input_pin, GPIO.IN, pull_up_down=GPIO.PUD_DOWN)
+        self._on = False
 
     def switch_down(self):
-        return GPIO.input(self._input_pin)
+        is_down = GPIO.input(self._input_pin)
+        if not self._on and is_down:
+            self._on = True
+            print_on_siwth
+        return is_down
 
 
 if __name__ == '__main__':

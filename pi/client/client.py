@@ -10,12 +10,12 @@ s = FunctionCallSendSocket(HOST,PORT)
 speed = 0.0005
 steps = 600
 
-s.motor_go(True, "Full", steps, speed, False, .05)
-s.motor_go(False, "Full", steps, speed, False, .05)
-s.motor_go(True, "Full", steps, speed, False, .05)
-s.motor_go(False, "Full", steps, speed, False, .05)
-s.motor_go(True, "Full", steps, speed, False, .05)
-s.motor_go(False, "Full", steps, speed, False, .05)
+#s.motor_go(True, "Full", steps, speed, False, .05)
+#s.motor_go(False, "Full", steps, speed, False, .05)
+#s.motor_go(True, "Full", steps, speed, False, .05)
+#s.motor_go(False, "Full", steps, speed, False, .05)
+#s.motor_go(True, "Full", steps, speed, False, .05)
+#s.motor_go(False, "Full", steps, speed, False, .05)
 
 #time.sleep(10)
 

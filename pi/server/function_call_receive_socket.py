@@ -21,7 +21,8 @@ class FunctionCallReceiveSocket(socket.socket):
         super().__init__(socket.AF_INET, socket.SOCK_STREAM)
         # Function dict/map
         self.function = {"motor_go": self.motor_go,
-                         "motor_go_to_endswith": self.motor_go_to_endswith}
+                         "motor_go_to_endswith": self.motor_go_to_endswith,
+                         "run_switch_test":self.run_switch_test}
 
         # Motor setup
         self.motor = RpiMotorLib.A4988Nema(direction_pin, step_pin, mode_pins, "A4988")
@@ -163,3 +164,17 @@ class FunctionCallReceiveSocket(socket.socket):
             initdelay_on = False
 
             switch_down = switch_check(end_switch_to_use)
+
+    def run_switch_test(self, endswith):
+        end_switch_to_use = [self.endswitch_open]
+        if endswith == "closed":
+            end_switch_to_use = [self.endswitch_closed]
+        elif endswith == "any":
+            end_switch_to_use = [self.endswitch_closed, self.endswitch_open]
+
+        switch_down = switch_check(end_switch_to_use)
+        while not switch_down:
+            pass
+
+        print(endswith, "is on")
+

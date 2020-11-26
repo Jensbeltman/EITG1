@@ -20,3 +20,6 @@ class FunctionCallSendSocket(socket.socket):
 
     def motor_go_to_endswith(self, endswith="open", clockwise=False, steptype="Full", steps=5, stepdelay=.005, verbose=False, initdelay=.05):
         self.send_msg("motor_go_to_endswith", endswith, clockwise, steptype, steps, stepdelay, verbose, initdelay)
+
+    def run_switch_test(self, endswith="open"):
+        self.send_msg("run_switch_test", endswith)
