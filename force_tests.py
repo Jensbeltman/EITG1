@@ -3,13 +3,33 @@ import rtde_control
 import click
 import numpy as np
 import uuid
+import matplotlib.pyplot as plt
+import time
 
 robot_ip = "192.168.100.2"
 rtde_r = rtde_receive.RTDEReceiveInterface(robot_ip)
 rtde_c = rtde_control.RTDEControlInterface(robot_ip)
 
+def plot_value_hist(pose_hist, name_mode=None):
+    plt.figure()
+    els = np.array(pose_hist).T
 
-def force_drive(start_height, end_height, speed=0.25, force_down=10):
+    for i, el in enumerate(els):
+        name = f"{i}"
+        if name_mode is not None:
+            name = plot_value_hist.names[name_mode][i]
+
+        plt.plot(el, label=name)
+
+    plt.grid()
+    plt.legend()
+    plt.show()
+plot_value_hist.names={
+    "pose": ["x", "y", "z", "r1", "r2", "r3"],
+    "force": ["Fx", "Fy", "Fz", "Fr1", "Fr2", "Fr3"]
+}
+
+def force_drive(start_height, end_height, speed=0.25, force_down=10, pro_stop=0.95, sleep=0.5):
     pose_hist = []
     force_hist = []
 
@@ -23,7 +43,9 @@ def force_drive(start_height, end_height, speed=0.25, force_down=10):
     force_type = 2
     limits = [2] * 6  # [1, 1, 1, 1, 1, 1]
 
-    go_on_at = 0.9 * force_down  # 80%
+    go_on_at = pro_stop * force_down  # 80%
+
+    time.sleep(sleep)
 
     # Execute 500Hz control loop for 4 seconds, each cycle is 2ms
     while True:
@@ -47,12 +69,12 @@ def force_drive(start_height, end_height, speed=0.25, force_down=10):
     return pose_hist, force_hist
 
 
-def force_test(force, start_h=0.15, end_h=0.25, speed_to_h=0.25):
+def force_test(force, start_h=0.15, end_h=0.25, speed_to_h=0.25, pro_stop=0.95):
     awn = click.prompt(f"Start first force test? ({force} N)", type=str, default="y")
     awn = awn.lower()
 
     if awn == "y":
-        pose_hist, force_hist = force_drive(start_h, end_h, speed=speed_to_h, force_down=force)
+        pose_hist, force_hist = force_drive(start_h, end_h, speed=speed_to_h, force_down=force, pro_stop=pro_stop)
     else:
         return
 
@@ -64,8 +86,11 @@ def force_test(force, start_h=0.15, end_h=0.25, speed_to_h=0.25):
     with open(f"force_test_{force}_damage_{run_id}.txt", "w") as f:
         f.write(damage_awn)
 
+    plot_value_hist(pose_hist, name_mode="pose")
+    plot_value_hist(force_hist, name_mode="force")
+
 
 for force in np.linspace(1, 30, 15, dtype=int):
-    force_test(force, start_h=0.15, end_h=0.25, speed_to_h=0.6)
+    force_test(force, start_h=0.15, end_h=0.15, speed_to_h=0.15, pro_stop=0.95)
 
 print("Done!!!!!!")
